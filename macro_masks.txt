@@ -1,0 +1,43 @@
+dir1 = getDirectory("E:\\INMED_stage\\DAPI_(blue)_ventral"); //get the working directory set by user
+list = getFileList(dir1); //list all the files in this directory
+output = "E:\\INMED_stage\\masks1905DAPI_VENTRAL\\"
+
+
+
+
+for (i=0; i<list.length; i++) {
+showProgress(i+1, list.length);
+
+open(list[i]); 
+imagename=getTitle(); //get the name of the file opened
+
+run("Z Project...", "projection=[Max Intensity]"); //Zproject to ensure that the area is selected throughout the slices
+
+setBatchMode(true); //batch mode on
+
+run("8-bit");
+
+waitForUser("Selection", "the user has to select the SP"); //waits for the area to be selected by the user
+ 
+roiManager("Add");			 //select only the CA1
+roiManager("Select", 0);
+
+roiManager("Measure");    //measure the SP area
+
+waitForUser("Measurement", "the user has to collect the measure of the area"); //user puts the area into an .xls file
+
+run("Make Inverse");  // to obtain the interesting area in black&white background
+
+run("Create Mask");   //creating masks
+ 
+saveAs("Tiff", output+"Masks-"+imagename);
+
+roiManager("Select",0);
+roiManager("Delete");
+
+setBatchMode(false);
+}
+
+run("Close");
+
+

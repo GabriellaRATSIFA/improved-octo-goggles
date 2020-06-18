@@ -1,0 +1,40 @@
+dir1 = getDirectory("E:\INMED_stage\DAPI_(blue)_ventral"); //get the working directory set by user
+list = getFileList(dir1); //list all the files in this directory
+
+output = "E:/INMED_stage/subsampling_dapi_ventral/"
+output_sp_area = "E:/INMED_stage/masks1905DAPI_VENTRAL/"
+
+for (i=0; i<list.length; i++) {
+showProgress(i+1, list.length);
+
+open(list[i]); 	      // open the .tif
+imagename=getTitle(); //get the name of the file opened
+
+waitForUser("open", "the user has to open the corresponding masks of "+imagename+" and create a selection of sp");
+
+//run("Create Selection");
+//roiManager("Add");
+//roiManager("Select", 0);
+
+setBatchMode(true);
+selectWindow("ROI Manager");
+img_bis = replace(imagename, ".tif", ""); //filename without extension
+roiManager("Save", output_sp_area+"sp-measure-area-"+img_bis+".roi"); //saves the area measure for later
+
+//selectWindow(imagename);
+//roiManager("select", 0);
+
+waitForUser("Crop", "the user has to select the roi on the"+img_bis+" and crop it");
+//setBackgroundColor(0, 0, 0);
+//run("Clear Outside", "stack");  //crop the region of interest 
+
+saveAs("Tiff", output+"cropped_"+imagename);
+
+roiManager("Select",0);
+roiManager("Delete"); 		//deletes the last ROI and gets ready for the next one
+
+waitForUser("ROI", "the user has to ensure that ROI manager is closed");
+setBatchMode(false);
+}
+
+run("Close");
